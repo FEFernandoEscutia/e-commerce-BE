@@ -11,7 +11,8 @@ import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { Role } from './role.enum';
 import { UpdateUserDto } from 'src/dtos/updateUser.dto';
-
+import { config as dotenvConfig } from 'dotenv';
+dotenvConfig({ path: '.env.development' });
 @Injectable()
 export class UsersRepository {
   constructor(
@@ -19,6 +20,24 @@ export class UsersRepository {
     private readonly userRepository: Repository<User>,
     private readonly jwtService: JwtService,
   ) {}
+
+  async onModuleInit() {
+    const adminUser = new User();
+    const hashPassword = await bcrypt.hash(process.env.ADMIN_PASSWORD, 10);
+    adminUser.name = 'MainAdmin';
+    adminUser.phone = 0;
+    adminUser.password = hashPassword;
+    adminUser.email = process.env.ADMIN_EMAIL;
+    adminUser.isAdmin = true;
+    const fAU = await this.findUserWithEmail(adminUser.email);
+    if (fAU) {
+      return console.log('first main user already exist');
+    }
+    this.userRepository.create(adminUser);
+    await this.userRepository.save(adminUser);
+    return console.log("1st Main user created successfully");
+    
+  }
   //****************************************************************************************************
   async findAllUsers() {
     return await this.userRepository.find();
