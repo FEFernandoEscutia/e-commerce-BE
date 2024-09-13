@@ -69,7 +69,8 @@ export class CreateUserDto{
       })
     city: string;
 
-    @IsOptional() 
+  
+    @IsOptional()
     @IsBoolean() 
     @ApiProperty({
         description: "Indicates if the user has admin privileges. Defaults to false. Only users with the ADMIN role can modify this value. Regular users cannot make any changes to this property.",
@@ -77,3 +78,4 @@ export class CreateUserDto{
       })
     isAdmin:boolean
 }
+

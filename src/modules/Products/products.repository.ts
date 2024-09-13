@@ -30,7 +30,11 @@ export class ProductsRepository {
   }
   //***********************************************************************************
   async findProductById(id: string) {
-    return await this.productRepository.findOne({ where: { id: id } });
+    const dbProduct = await this.productRepository.findOne({ where: { id: id } });
+    if(!dbProduct){
+      throw new ConflictException('Product does not exist')
+    }
+    return dbProduct
   }
   //***********************************************************************************
   async findProductByName(product: string) {
@@ -66,9 +70,10 @@ export class ProductsRepository {
     }
   }
   //***********************************************************************************
-  async updateProduct(product: UpdateProductDto, dbProduct: Product) {
+  async updateProduct(updatedProduct: UpdateProductDto, dbProduct: Product) {
+    const{category, ...values}= updatedProduct
     try {
-      await this.productRepository.save({ ...dbProduct, ...product });
+      await this.productRepository.update(dbProduct.id, values);
 
       return { message: 'The product has been successfully updated' };
     } catch (error) {

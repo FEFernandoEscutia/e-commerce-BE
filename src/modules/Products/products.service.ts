@@ -39,8 +39,10 @@ export class ProductsService {
     return products.slice((nPage - 1) * nLimit, nPage * nLimit);
   }
 //***********************************************************************************
-  getProductsById(id: string) {
-    return this.productsRepository.findProductById(id);
+  async getProductsById(id: string) {
+    const dbProduct =  await this.productsRepository.findProductById(id);
+    const {orderDetails, ...properties} = dbProduct
+    return properties
   }
 //***********************************************************************************
   async createProduct(product: CreateProductDto) {

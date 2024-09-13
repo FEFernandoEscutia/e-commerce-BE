@@ -46,7 +46,8 @@ export class UsersController {
  @ApiBearerAuth()
   @HttpCode(200)
   @Get(':id')
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles(Role.Admin)
   async getUserById(@Param('id') id: string) {
     if (!isUUID(id)) {
       throw new BadRequestException('Invalid UUID format');
